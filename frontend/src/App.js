@@ -26,7 +26,7 @@ const ipfs = ipfsClient.create({ host: "ipfs.infura.io", port: 5001, protocol: "
 class App extends Component {
 
 
-  async componentWillMount() {
+  async componentDidMount() {
     await this.loadWeb3()
   }
   async loadWeb3() {
@@ -223,7 +223,7 @@ class App extends Component {
         </div>
 
         {/* </Router> */}
-      </HashRouter>//for github pages
+      </HashRouter>
 
     );
   }
