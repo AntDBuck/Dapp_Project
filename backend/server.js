@@ -27,7 +27,7 @@ app.use(cors());
 // Enable parsing of JSON requests (added for potential future use).
 app.use(express.json());
 
-// Define root get endpoint.
+// Define root get endpoint (for testing purposes).
 app.get('/', (req, res) => 
     {
         // Send confirmation message.
