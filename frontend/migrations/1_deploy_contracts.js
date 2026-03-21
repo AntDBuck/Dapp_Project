@@ -1,5 +1,5 @@
-const OurStorageDapp = artifacts.require("OurStorageDapp");
+const NewsMakerDapp = artifacts.require("NewsMakerDapp");
 
 module.exports = function(deployer) {
-  deployer.deploy(OurStorageDapp);
+  deployer.deploy(NewsMakerDapp);
 };
