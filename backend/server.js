@@ -54,7 +54,7 @@ app.post('/upload', articleUploader.single('article'), async (req, res) =>
 
             // Create form data object and append uploaded file from memory buffer.
             const wrappedArticle = new FormData();
-            wrappedArticle.append('article', article.buffer, article.originalname);
+            wrappedArticle.append('file', article.buffer, article.originalname);
 
             // Send form data to Pinata's API using axios post method.
             const pinataRes = await axios.post(
