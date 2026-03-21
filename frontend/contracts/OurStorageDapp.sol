@@ -1,86 +1,158 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-contract OurStorageDapp {
-    string public contractName = "Our Decentralized Storage (ODS)";
+/// @title Smart contract for News Maker Dapp.
+contract NewsMakerDapp 
+{
+    // Globally define name of contract.
+    string public contractName = "News Maker Dapp";
 
-    mapping(address => uint256) internal totalFilesOf;
+    // Globally define number of articles and map count to each article.
+    uint256 public allArticlesCount;
+    mapping(uint256 => Article) public allArticles;
 
-    mapping(address => mapping(uint256 => File)) internal fileOf;
+    // Define number of articles per user.
+    mapping(address => uint256) internal totalArticlesOf;
+    // Define article ownership from user address and number of articles.
+    mapping(address => mapping(uint256 => Article)) internal articleOf;
 
-    struct File {
-        uint256 fileId;
-        string fileHash;
-        uint256 fileSize;
-        string fileType;
-        string fileName;
-        string fileDes;
-        uint256 uploadTime;
-        address uploader;
+    // Article type.
+    struct Article 
+    {
+        uint256 articleId;
+        string cid;
+        string title;
+        string description;
+        uint256 publishedTime;
+        uint256 updatedTime;
+        address author;
+        bool deleted;
     }
 
-    event FileUploadedEvent(string action, address uploader);
+    // Article events defined for uploading, deleting, and updating.
+    event ArticlePublishedEvent(address author, uint256 articleId);
+    event ArticleDeletedEvent(address author, uint256 articleId);
+    event ArticleUpdatedEvent(address author, uint256 articleId);
 
-    function getTotalFileCount() public view returns (uint256) {
-        return totalFilesOf[msg.sender];
+    /// @notice Returns the total number of all articles.
+    /// @return count The total number of articles globally.
+    function getAllArticleCount() public view returns (uint256 count)
+    {
+        count = allArticlesCount;
     }
 
-    function getFileOf(uint256 _fileId) public view returns (File memory) {
-        return fileOf[msg.sender][_fileId];
+    /// @notice Returns the total number of articles from a specific publisher.
+    /// @param _user The address of the publisher.
+    /// @return count The total number of articles from a publisher.
+    function getTotalArticleCountOf(address _user) public view returns (uint256 count) 
+    {
+        count = totalArticlesOf[_user];
     }
 
+    /// @notice Returns the total number of articles from the current publisher.
+    /// @return count The total number of articles of the current publisher.
+    function getMyTotalArticleCount() public view returns (uint256 count)
+    {
+        count = totalArticlesOf[msg.sender];
+    }
 
-        //start =>  upload- delete-edit 
-    function uploadFile(
-        string memory _fileHash,
-        uint256 _fileSize,
-        string memory _fileType,
-        string memory _fileName,
-        string memory _fileDescription
-    ) public {
+    /// @notice Returns a specific article based on publisher address and article ID.
+    /// @param _user The address of the publisher.
+    /// @param _articleId The ID of the article to get.
+    /// @return article The requested article from memory.
+    function getArticleOf(address _user, uint256 _articleId) public view returns (Article memory article)
+    {
+        article = articleOf[_user][_articleId];
+    }
+
+    /// @notice Returns the article of the current user based on article ID.
+    /// @param _articleId The ID of the article to get.
+    /// @return article The requested article from memory.
+    function getMyArticle(uint256 _articleId) public view returns (Article memory article)
+    {
+        article = articleOf[msg.sender][_articleId];
+    }
+
+    /// @notice Uploads new article metadata onto blockchain.
+    /// @param _cid The Content ID of the article on the IPFS network.
+    /// @param _title The title used in the article.
+    /// @param _description The brief description describing the article.
+    function publishArticle(string memory _cid, string memory _title, string memory _description) public 
+    {
+        // Non-empty field checks.
         require(
-            bytes(_fileHash).length > 0 &&
-                bytes(_fileType).length > 0 &&
-                bytes(_fileDescription).length > 0 &&
-                bytes(_fileName).length > 0 &&
-                msg.sender != address(0) &&
-                _fileSize > 0
+            bytes(_cid).length > 0 && 
+            bytes(_title).length > 0 && 
+            bytes(_description).length > 0 &&
+            msg.sender != address(0)
         );
 
-        totalFilesOf[msg.sender]++;
+        // Increment global article count and user article count.
+        allArticlesCount++;
+        totalArticlesOf[msg.sender]++;
 
-        fileOf[msg.sender][totalFilesOf[msg.sender]] = File(
-            totalFilesOf[msg.sender],
-            _fileHash,
-            _fileSize,
-            _fileType,
-            _fileName,
-            _fileDescription,
+        // New article ID mapped to incremented global count.
+        uint256 newArticleId = allArticlesCount;
+
+        // Define new article.
+        Article memory newArticle = Article(
+            newArticleId,
+            _cid,
+            _title,
+            _description,
             block.timestamp,
-            msg.sender
+            block.timestamp,
+            msg.sender,
+            false
         );
 
-        emit FileUploadedEvent("File Uploaded", msg.sender);
+        // Add new article to global mapping.
+        allArticles[newArticleId] = newArticle;
+
+        // Add new article to user mapping.
+        articleOf[msg.sender][totalArticlesOf[msg.sender]] = newArticle;
+
+        emit ArticlePublishedEvent(msg.sender, newArticleId);
     }
 
-    function deleteFile(uint256 _id) public {
-        fileOf[msg.sender][_id].fileName = "0deleted_";
+    /// @notice Deletes article specified via article ID.
+    /// @param _articleId The ID of the article to delete.
+    function deleteArticle(uint256 _articleId) public 
+    {
+        // Get reference to article from storage.
+        Article storage articleRef = articleOf[msg.sender][_articleId];
+
+        // Authorisation check.
+        require(articleRef.author == msg.sender);
+
+        // Set fields to empty strings, update updated timestamp, and set deleted flag to true.
+        articleRef.cid = "";
+        articleRef.title = "";
+        articleRef.description = "";
+        articleRef.updatedTime = block.timestamp;
+        articleRef.deleted = true;
+
+        emit ArticleDeletedEvent(msg.sender, _articleId);
     }
 
-    function deleteFileForever(uint256 _id) public {
-        fileOf[msg.sender][_id].fileHash = "";
-        fileOf[msg.sender][_id].fileName = "0deleted_forever_";
-        fileOf[msg.sender][_id].fileDes = "";
-    }
+    /// @notice Update article content (title and description).
+    /// @param _articleId The ID of the article to update.
+    /// @param _title The title used in the article.
+    /// @param _description The brief description describing the article.
+    function updateArticle(uint256 _articleId, string memory _title, string memory _description) public 
+    {
+        // Get reference to article from storage.
+        Article storage articleRef = articleOf[msg.sender][_articleId];
 
-    function editFileDeatils(
-        uint256 _id,
-        string memory _name,
-        string memory _des
-    ) public {
-        fileOf[msg.sender][_id].fileName = _name;
-        fileOf[msg.sender][_id].fileDes = _des;
-    }
-        //end =>  upload- delete-edit 
+        // Authorisation check and deletion check.
+        require(articleRef.author == msg.sender);
+        require(articleRef.deleted != true);
 
+        // Set old values to passed values and update updated timestamp.
+        articleRef.title = _title;
+        articleRef.description = _description;
+        articleRef.updatedTime = block.timestamp;
+
+        emit ArticleUpdatedEvent(msg.sender, _articleId);
+    }
 }
