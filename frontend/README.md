@@ -1,32 +1,16 @@
-# Our Decentralized Storage (ODS)
-## Blockchain based file storage Decentralized application (Dapp)
+# React + Vite
 
-I Created 'Our Decentralized Storage' on the Ethereum blockchain. And also created a Website for using it by using React.
+This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-## Smart Contract Deployed to **Ropsten test network** and React website to Github pages.
+Currently, two official plugins are available:
 
-Website Link: [Our Decentralized Storage Dapp](https://abhithory.github.io/Our_Storage_Dapp/ "Our Decentralized Storage Dapp")
+- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
+- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
 
----------------------------
-## Our Decentralized Storage Dapp Features:--
-- =>Upload Any type of files in Decentralized Storage (IPFS)
-- =>Only you can access and share your files 
-- =>You can Edit,Delete and share your files
+## React Compiler
 
------------------------------
+The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
 
-### Our Decentralized Storage Dapp Contract on Ropsten test network: [Our Decentralized Storage dapp](https://ropsten.etherscan.io/address/0xe54e497e3d8fe73972b42356f7B4B6e91936EbE0 "Our Decentralized Storage")
+## Expanding the ESLint configuration
 
-
-Full Code in Mater Branch : [Our_Storage_Dapp Code](https://github.com/abhithory/Our_Storage_Dapp "Our_Storage_Dapp Code")
-
-
-## Smart Contracts in Solidity
-## Wesite created using React js
-
-### This project is inspired by dapp [Dapp university](https://youtu.be/1KwaUyjLa4Qp "Dapp university")
-
-
-![imagename](https://raw.githubusercontent.com/abhithory/Our_Storage_Dapp/master/public/img/our_storage_dapp.PNG)
-
-![imagename](https://raw.githubusercontent.com/abhithory/Our_Storage_Dapp/master/public/img/our_storage_dapp2.PNG)
+If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.

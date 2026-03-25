@@ -20,7 +20,6 @@ contract NewsMakerDapp
         uint256 articleId;
         string cid;
         string title;
-        string description;
         uint256 publishedTime;
         uint256 updatedTime;
         address author;
@@ -54,6 +53,45 @@ contract NewsMakerDapp
         count = articlesByAuthor[msg.sender].length;
     }
 
+    /// @notice Returns all articles.
+    /// @return allArticles All articles in an array.
+    function getAllArticles() public view returns (Article[] memory)
+    {
+        // Check an article exists.
+        require(articleCount >= 1, "No articles have been published.");
+
+        // New count for all non-deleted articles.
+        uint nonDeletedCount = 0;
+
+        // Loop through articleCount...
+        for (uint index = 1; index <= articleCount; index++)
+        {
+            // Increment non-deleted article count if article delete flag is not deleted.
+            if (!articles[index].deleted)
+            {
+                nonDeletedCount++;
+            }
+        }
+
+        // New article array to hold all non-deleted articles.
+        Article[] memory allArticles = new Article[](nonDeletedCount);
+        // Index for allArticles.
+        uint newIndex = 0;
+
+        // Loop through articleCount...
+        for (uint index = 1; index <= articleCount; index++)
+        {
+            // Add article to allArticles array if article has not been deleted.
+            if (!articles[index].deleted)
+            {
+                allArticles[newIndex] = articles[index];
+                newIndex++;
+            }
+        }
+
+        return allArticles;
+    }
+
     /// @notice Returns a specific article based on author address and article ID.
     /// @param _author The address of the author.
     /// @param _index The position of the article in the author-article mapping.
@@ -76,14 +114,12 @@ contract NewsMakerDapp
     /// @notice Uploads new article metadata onto blockchain.
     /// @param _cid The Content ID of the article on the IPFS network.
     /// @param _title The title used in the article.
-    /// @param _description The brief description describing the article.
-    function publishArticle(string memory _cid, string memory _title, string memory _description) public 
+    function publishArticle(string memory _cid, string memory _title) public 
     {
         // Non-empty field checks.
         require(
             bytes(_cid).length > 0 && 
             bytes(_title).length > 0 && 
-            bytes(_description).length > 0 &&
             msg.sender != address(0)
         );
 
@@ -98,7 +134,6 @@ contract NewsMakerDapp
             newArticleId,
             _cid,
             _title,
-            _description,
             block.timestamp,
             block.timestamp,
             msg.sender,
@@ -133,11 +168,10 @@ contract NewsMakerDapp
         emit ArticleDeletedEvent(msg.sender, _articleId);
     }
 
-    /// @notice Update article content (title and description).
+    /// @notice Update article content (title).
     /// @param _articleId The ID of the article to update.
     /// @param _title The title used in the article.
-    /// @param _description The brief description describing the article.
-    function updateArticle(uint256 _articleId, string memory _title, string memory _description) public 
+    function updateArticle(uint256 _articleId, string memory _title) public 
     {
         // Get reference to article from storage.
         Article storage articleRef = articles[_articleId];
@@ -148,7 +182,6 @@ contract NewsMakerDapp
 
         // Set old values to passed values and update updated timestamp.
         articleRef.title = _title;
-        articleRef.description = _description;
         articleRef.updatedTime = block.timestamp;
 
         emit ArticleUpdatedEvent(msg.sender, _articleId);

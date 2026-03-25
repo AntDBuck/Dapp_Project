@@ -1,0 +1,23 @@
+.hero {
+    height: 30vmax;
+    background-image: url('../assets/news-img-hero.jpg');
+    background-size: cover;
+    background-position: center;
+
+    text-align: center;
+    text-shadow: 0 0.2rem 0.2rem black;
+    color: white;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    padding-bottom: 3rem;
+}
+
+.hero h1 {
+    font-size: 3rem;
+}
+
+.hero p {
+    font-size: 1.5rem;
+}
