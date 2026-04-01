@@ -11,7 +11,7 @@ import Header from './components/Header';
 import AppRoutes from './AppRoutes';
 import NotConnected from './components/NotConnected';
 
-function App() 
+function App()
 {
   const [account, setAccount] = useState('');
   const [contract, setContract] = useState(null);
@@ -30,6 +30,7 @@ function App()
         {
           window.web3 = new Web3(window.ethereum);
           await loadBlockchainData();
+          setConnected(true);
           setSuccessMsg('Blockchain loaded!');
         }
         catch(err)
@@ -46,7 +47,7 @@ function App()
         setConnected(false);
       }
     };
-    //loadWeb3();
+    loadWeb3();
   }, []
   );
    
@@ -194,13 +195,12 @@ function App()
 
   return (
     <HashRouter>
-      <Header />
+      <Header account={account} />
       <main>
-        <AppRoutes />
+        <AppRoutes contract={contract} account={account} />
       </main>
     </HashRouter>
   );
-
 };
 
 export default App;

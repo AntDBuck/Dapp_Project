@@ -2,7 +2,7 @@
 pragma solidity >=0.4.22 <0.9.0;
 
 /// @title Smart contract for News Maker Dapp.
-contract NewsMakerDapp 
+contract NewsMakerDapp
 {
     // Globally define name of contract.
     string public contractName = "News Maker Dapp";
@@ -57,9 +57,6 @@ contract NewsMakerDapp
     /// @return allArticles All articles in an array.
     function getAllArticles() public view returns (Article[] memory)
     {
-        // Check an article exists.
-        require(articleCount >= 1, "No articles have been published.");
-
         // New count for all non-deleted articles.
         uint nonDeletedCount = 0;
 

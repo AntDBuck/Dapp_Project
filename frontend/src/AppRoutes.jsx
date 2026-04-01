@@ -1,19 +1,25 @@
 import { Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import AboutPage from "./pages/AboutPage";
-import AllArticlesPage from "./pages/AllArticlespage";
-import MyArticlesPage from "./pages/myArticlesPage";
+import AllArticlesPage from "./pages/AllArticlesPage";
 import NoPage from "./pages/noPage";
+import TestPage from "./pages/TestPage";
+import CreateArticlePage from "./pages/CreateArticlePage";
 
-function AppRoutes()
+function AppRoutes({ contract, account })
 {
     return (
         <Routes>
-            <Route path='/' element={<HomePage />}></Route>
-            <Route path='/about' element={<AboutPage />}></Route>
-            <Route path='/all-articles' element={<AllArticlesPage />}></Route>
-            <Route path='/my-articles' element={<MyArticlesPage />}></Route>
-            <Route path='*' element={<NoPage />}></Route>
+            <Route path='/' element={<HomePage />} />
+            <Route 
+                path='/all-articles' 
+                element={<AllArticlesPage contract={contract} account={account} />} 
+            />
+            <Route 
+                path='/create-article' 
+                element={<CreateArticlePage contract={contract} account={account}/>}  
+            />
+            <Route path='*' element={<NoPage />} />
+            <Route path='/test' element={<TestPage contract={contract} account={account} />} />
         </Routes>
     );
 };
