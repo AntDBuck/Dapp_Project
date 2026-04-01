@@ -1,7 +1,6 @@
 import express from 'express';
 import axios from 'axios';
 import cors from 'cors';
-import multer from 'multer';
 import dotenv from 'dotenv';
 import FormData from 'form-data';
 
@@ -19,9 +18,6 @@ const PORT = process.env.PORT || 5000;
 // Create express server app.
 const app = express();
 
-// Initialise multer object and store articles in buffer memory.
-const articleUploader = multer();
-
 // Enable requests from React application.
 app.use(cors());
 // Enable parsing of JSON requests (added for potential future use).
@@ -36,15 +32,15 @@ app.get('/', (req, res) =>
 );
 
 // Define API endpoint for uploading article files to Pinata IPFS.
-app.post('/upload', articleUploader.single('article'), async (req, res) => 
+app.post('/upload-json-data', async (req, res) => 
     {
         try 
         {
             // Get uploaded article from request. 
-            const article = req.file;
+            const articleData = req.body;
 
             // If article does not exist send status code and JSON error message.
-            if (!article) return res.status(400).json({ error: 'No article was uploaded!' });
+            if (!articleData) return res.status(400).json({ error: 'No article was uploaded!' });
 
             // If API keys do not exist send status code and JSON error message.
             if (!PINATA_API_KEY || !PINATA_SECRET_API_KEY)
@@ -52,9 +48,13 @@ app.post('/upload', articleUploader.single('article'), async (req, res) =>
                 return res.status(500).json({ error: 'No Pinata API keys found!' });
             }
 
-            // Create form data object and append uploaded file from memory buffer.
+            // Create form data object, append uploaded file from memory buffer, and convert to JSON.
             const wrappedArticle = new FormData();
-            wrappedArticle.append('file', article.buffer, article.originalname);
+            wrappedArticle.append(
+                'file', 
+                Buffer.from(JSON.stringify(articleData)), 
+                'article.json'
+            );
 
             // Send form data to Pinata's API using axios post method.
             const pinataRes = await axios.post(
