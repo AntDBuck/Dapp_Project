@@ -1,23 +1,68 @@
-.hero {
-    height: 30vmax;
-    background-image: url('../assets/news-img-hero.jpg');
-    background-size: cover;
-    background-position: center;
+* {
+    font-family: 'Times New Roman', Times, serif;
+}
 
-    text-align: center;
-    text-shadow: 0 0.2rem 0.2rem black;
-    color: white;
+.header {
+    min-height: 10vh;
+}
 
+main {
+    background-color: #ddd;
+    min-height: 90vh;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+
+.article-card-section {
     display: flex;
     flex-direction: column;
-    justify-content: end;
-    padding-bottom: 3rem;
+    justify-content: center;
 }
 
-.hero h1 {
-    font-size: 3rem;
+.article-card-content {
+    display: flex;
+    justify-content: center;
 }
 
-.hero p {
-    font-size: 1.5rem;
+.drag-block {
+    width: 100%;
+    text-align: center;
+    padding: 0.5rem;
+    cursor: grab;
+}
+
+.drop-box {
+    width: 100%;
+    min-height: 5rem;
+    border: 2px solid grey;
+    display: flex;
+    padding: 0.1rem;
+    box-sizing: border-box;
+}
+
+.side-bar {
+    position: sticky;
+    align-self: flex-start;
+    top: 1rem;
+}
+
+.inputs {
+    box-sizing: border-box;
+    flex: 1;
+    overflow: hidden;
+}
+
+.input-title {
+    text-align: center;
+    font-size: 2rem !important;
+}
+
+.input-headings {
+    text-align: center;
+    font-size: 1.5rem !important;
+}
+
+.inputs-img {
+    width: 100%;
+    height: auto;
 }
