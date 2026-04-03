@@ -20,75 +20,66 @@ const app = express();
 
 // Enable requests from React application.
 app.use(cors());
-// Enable parsing of JSON requests (added for potential future use).
-app.use(express.json());
+// Enable parsing of JSON requests and increase limit.
+app.use(express.json({ limit: '5mb' }));
 
 // Define root get endpoint (for testing purposes).
-app.get('/', (req, res) => 
-    {
-        // Send confirmation message.
-        res.send('Backend is running!');
-    }
-);
+app.get('/', (req, res) => {
+    // Send confirmation message.
+    res.send('Backend is running!');
+});
 
 // Define API endpoint for uploading article files to Pinata IPFS.
-app.post('/upload-json-data', async (req, res) => 
-    {
-        try 
-        {
-            // Get uploaded article from request. 
-            const articleData = req.body;
+app.post('/upload-json-data', async (req, res) => {
+    try {
+        // Get uploaded article from request. 
+        const articleData = req.body;
 
-            // If article does not exist send status code and JSON error message.
-            if (!articleData) return res.status(400).json({ error: 'No article was uploaded!' });
+        // If article does not exist send status code and JSON error message.
+        if (!articleData) return res.status(400).json({ error: 'No article was uploaded!' });
 
-            // If API keys do not exist send status code and JSON error message.
-            if (!PINATA_API_KEY || !PINATA_SECRET_API_KEY)
-            {
-                return res.status(500).json({ error: 'No Pinata API keys found!' });
-            }
-
-            // Create form data object, append uploaded file from memory buffer, and convert to JSON.
-            const wrappedArticle = new FormData();
-            wrappedArticle.append(
-                'file', 
-                Buffer.from(JSON.stringify(articleData)), 
-                'article.json'
-            );
-
-            // Send form data to Pinata's API using axios post method.
-            const pinataRes = await axios.post(
-                'https://api.pinata.cloud/pinning/pinFileToIPFS',
-                wrappedArticle,
-                {
-                    // No article length limit.
-                    maxBodyLength: 'Infinity',
-                    // Set metadata information, including API keys for authentication.
-                    headers:
-                    {
-                        ...wrappedArticle.getHeaders(),
-                        pinata_api_key: PINATA_API_KEY,
-                        pinata_secret_api_key: PINATA_SECRET_API_KEY
-                    },
-                }
-            );
-
-            // Pass upload data response to console.
-            console.log('Pinata response data:', pinataRes.data);
-
-            // Get uploaded article's CID in JSON format.
-            res.json({ cid: pinataRes.data.IpfsHash });
-        } 
-        // Catch potential errors during upload.
-        catch (err)
-        {
-            // Pass error to console.
-            console.error('Pinata upload error:', err);
-            // Send HTTP status code and JSON error message.
-            res.status(500).json({ error: 'Failed to upload article to Pinata!' });
+        // If API keys do not exist send status code and JSON error message.
+        if (!PINATA_API_KEY || !PINATA_SECRET_API_KEY){
+            return res.status(500).json({ error: 'No Pinata API keys found!' });
         }
+
+        // Create form data object, append uploaded file from memory buffer, and convert to JSON.
+        const wrappedArticle = new FormData();
+        wrappedArticle.append(
+            'file', 
+            Buffer.from(JSON.stringify(articleData)), 
+            `${articleData.title}.json`
+        );
+
+        // Send form data to Pinata's API using axios post method.
+        const pinataRes = await axios.post(
+            'https://api.pinata.cloud/pinning/pinFileToIPFS',
+            wrappedArticle, {
+                // No article length limit.
+                maxBodyLength: 'Infinity',
+                // Set metadata information, including API keys for authentication.
+                headers: {
+                    ...wrappedArticle.getHeaders(),
+                    pinata_api_key: PINATA_API_KEY,
+                    pinata_secret_api_key: PINATA_SECRET_API_KEY
+                },
+            }
+        );
+
+        // Pass upload data response to console.
+        console.log('Pinata response data:', pinataRes.data);
+
+        // Get uploaded article's CID in JSON format.
+        res.json({ cid: pinataRes.data.IpfsHash });
     }
-);
+    // Catch potential errors during upload.
+    catch (err) {
+        // Pass error to console.
+        console.error('Pinata upload error:', err);
+        // Send HTTP status code and JSON error message.
+        res.status(500).json({ error: 'Failed to upload article to Pinata!' });
+    }
+});
 
 // Start server and print console confirmation.
 app.listen(PORT, () => console.log(`Backend server running on port ${PORT}.`));
