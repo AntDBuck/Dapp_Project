@@ -1,28 +1,26 @@
+import { Button } from "react-bootstrap";
 import { formatTime, formatAddress } from "./UtilTools";
 
-function ListArticles({ articles }) 
-{
+function ListArticles({ articles, onArticleClick }) {
     return (
-        <section>
-            {
-                articles.length === 0 ? 
-                (
-                    <h3>No articles found.</h3>
-                ) :
-                (
-                    articles.map((article) =>
-                        (
-                            <div key={article.articleId}>
-                                <h4>{article.title}</h4>
-                                <p>Author: {formatAddress(article.author)}</p>
-                                <p>Published on: {formatTime(article.publishedTime)}</p>
-                                <p>Last updated: {formatTime(article.updatedTime)}</p>
-                                <p>CID: {article.cid}</p>
-                            </div>
-                        )
-                    )
-                )
-            }
+        <section className='article-card-section gap-1'>
+            {articles.length === 0 ? (<h3>No articles found.</h3>) : (
+                articles.map((article) => (
+                    <Button
+                        key={article.articleId}
+                        onClick={() => onArticleClick(article.cid)}
+                        variant='outline-dark'
+                        
+                    >
+                        <h5><b>{article.title}</b></h5>
+                        <div className='article-card-content gap-4'>
+                            <p><b>Author:</b> {formatAddress(article.author)}</p>
+                            <p><b>Published on:</b> {formatTime(article.publishedTime)}</p>
+                        </div>
+                        <p><b>CID:</b> {article.cid}</p>
+                    </Button>
+                ))
+            )}
         </section>
     );
 };
