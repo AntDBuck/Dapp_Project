@@ -15,7 +15,6 @@ function Header({ account })
             <Nav.Link as={NavLink} to='/'>Home</Nav.Link>
             <Nav.Link as={NavLink} to='/all-articles'>All Articles</Nav.Link>
             <Nav.Link as={NavLink} to='/create-article'>Create Article</Nav.Link>
-            <Nav.Link as={NavLink} to='/test'>Test</Nav.Link>
           </Nav>
           <div className='d-flex align-items-center ms-auto gap-3'>
             {
