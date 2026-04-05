@@ -14,6 +14,9 @@ contract NewsMakerDapp
     // Mapping of article indices by author from global article source.
     mapping(address => uint256[]) public articlesByAuthor;
 
+    // Mapping of article id => account address => has voted true or false. 
+    mapping(uint256 => mapping(address => bool)) hasVoted;
+
     // Article type.
     struct Article 
     {
@@ -21,29 +24,22 @@ contract NewsMakerDapp
         string cid;
         string title;
         uint256 publishedTime;
-        uint256 updatedTime;
         address author;
+        uint256 likes;
+        uint256 dislikes;
         bool deleted;
     }
 
-    // Article events defined for uploading, deleting, and updating.
+    // Article events defined for uploading, deleting, and voting.
     event ArticlePublishedEvent(address author, uint256 articleId);
     event ArticleDeletedEvent(address author, uint256 articleId);
-    event ArticleUpdatedEvent(address author, uint256 articleId);
+    event VoteOnArticleEvent(address voter, uint256 _articleId, bool isLike);
 
     /// @notice Returns the total number of articles.
     /// @return count The total number of articles globally.
     function getArticleCount() public view returns (uint256 count)
     {
         count = articleCount;
-    }
-
-    /// @notice Returns the total number of articles from a specific author.
-    /// @param _author The address of the author.
-    /// @return count The total number of articles from a author.
-    function getArticleCountByAuthor(address _author) public view returns (uint256 count) 
-    {
-        count = articlesByAuthor[_author].length;
     }
 
     /// @notice Returns the total number of articles from the current author.
@@ -85,18 +81,7 @@ contract NewsMakerDapp
                 newIndex++;
             }
         }
-
         return allArticles;
-    }
-
-    /// @notice Returns a specific article based on author address and article ID.
-    /// @param _author The address of the author.
-    /// @param _index The position of the article in the author-article mapping.
-    /// @return article The requested article from memory.
-    function getArticleByAuthor(address _author, uint256 _index) public view returns (Article memory article)
-    {
-        uint256 articleIndex = articlesByAuthor[_author][_index];
-        article = articles[articleIndex];
     }
 
     /// @notice Returns the article of the current user based on article ID.
@@ -132,8 +117,9 @@ contract NewsMakerDapp
             _cid,
             _title,
             block.timestamp,
-            block.timestamp,
             msg.sender,
+            0,
+            0,
             false
         );
 
@@ -157,30 +143,45 @@ contract NewsMakerDapp
         require(articleRef.author == msg.sender, "Must be author of article to delete!");
         require(articleRef.deleted != true, "Article has already been deleted!");
 
-        // Set cid to empty strings, update updated timestamp, and set deleted flag to true.
+        // Set cid to empty strings and set deleted flag to true.
         articleRef.cid = "";
-        articleRef.updatedTime = block.timestamp;
         articleRef.deleted = true;
 
         emit ArticleDeletedEvent(msg.sender, _articleId);
     }
 
-    /// @notice Update article content (title).
-    /// @param _articleId The ID of the article to update.
-    /// @param _title The title used in the article.
-    function updateArticle(uint256 _articleId, string memory _title) public 
+    /// @notice Adds like/dislike to specified article from a specific voter.
+    /// @param _articleId The ID of the article which is voted on.
+    /// @param isLike The like/dislike boolean check.
+    function voteOnArticle(uint256 _articleId, bool isLike) public
     {
-        // Get reference to article from storage.
+        // Require that this account has not liked/disliked this article.
+        require(!hasVoted[_articleId][msg.sender], "Account already voted!");
+
+        // Get reference to article from global store.
         Article storage articleRef = articles[_articleId];
 
-        // Authorisation check and deletion check.
-        require(articleRef.author == msg.sender, "Must be author of article to update!");
-        require(articleRef.deleted != true, "Article has been deleted!");
+        // Check if voter liked or disliked, then increment matching type.
+        if (isLike)
+        {
+            articleRef.likes++;
+        }
+        else 
+        {
+            articleRef.dislikes++;
+        }
 
-        // Set old values to passed values and update updated timestamp.
-        articleRef.title = _title;
-        articleRef.updatedTime = block.timestamp;
+        // Update mapping so that voter can not vote on this article again.
+        hasVoted[_articleId][msg.sender] = true;
 
-        emit ArticleUpdatedEvent(msg.sender, _articleId);
+        emit VoteOnArticleEvent(msg.sender, _articleId, isLike);
+    }
+
+    /// @notice Returns a boolean check of user voting on a specific article.
+    /// @param _articleId The ID of the article to check.
+    /// @return voteCheck A boolean check on profile voting for this article.
+    function getHasVoted(uint256 _articleId) public view returns (bool voteCheck)
+    {
+        voteCheck = hasVoted[_articleId][msg.sender];
     }
 }
