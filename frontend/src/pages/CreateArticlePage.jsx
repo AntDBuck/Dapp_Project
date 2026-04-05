@@ -87,8 +87,10 @@ function CreateArticlePage({ account, contract })
     );
     
     const imgCount = rows
-        .flatMap((row) => row.columns)
-        .filter((col) => col.block?.blockType === 'Image').length;
+    .flatMap((row) => row.columns)
+    .filter((col) => col.block?.blockType === 'Image').length;
+
+    const inRowLimit = rows.length < 10;
 
     const addBlock = (source, target) => 
     (
@@ -254,7 +256,7 @@ function CreateArticlePage({ account, contract })
                 <Col md={2} className='d-flex flex-column align-items-center p-4 gap-3 side-bar'>
                     <DragBlock blockType='Sub-Heading' disabled={status} />
                     <DragBlock blockType='Text' disabled={status} />
-                    <DragBlock blockType='Image' disabled={imgCount >= 4 || status} />
+                    <DragBlock blockType='Image' disabled={status || imgCount >= 4} />
                     {
                         imgCount >= 4 && 
                         (
@@ -313,11 +315,15 @@ function CreateArticlePage({ account, contract })
                                     ))
                                 }
                             </Row>
+                            {
+                                !inRowLimit && 
+                                <p className='text-danger text-center'>Row limit of 10 reached!</p>
+                            }
                             <div className='d-flex justify-content-center gap-5 mt-2'>
-                                <Button onClick={addFullRow}>
+                                <Button disabled={!inRowLimit} onClick={addFullRow}>
                                     Add Whole Slot
                                 </Button>
-                                <Button onClick={addHalfRow}>
+                                <Button disabled={!inRowLimit} onClick={addHalfRow}>
                                     Add Half Slots
                                 </Button>
                             </div>
