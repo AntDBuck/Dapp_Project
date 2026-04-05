@@ -11,10 +11,11 @@ function AllArticlesPage({ contract, account })
     const [filteredArticles, setFilteredArticles] = useState('all');
     const [selectedArticleBody, setSelectedArticleBody] = useState(null);
     const [selectedArticleMeta, setSelectedArticleMeta] = useState(null);
+    const [hasVoted, setHasVoted] = useState(false);
 
     useEffect(() => 
     {
-        const loadArticles = async () => 
+        const loadArticles = async () =>
         {
             if (!contract || !account ) return;
 
@@ -35,7 +36,8 @@ function AllArticlesPage({ contract, account })
                             cid: article.cid,
                             title: article.title,
                             publishedTime: article.publishedTime,
-                            updatedTime: article.updatedTime,
+                            likes: article.likes,
+                            dislikes: article.dislikes,
                             author: article.author
                         }
                     )))
@@ -56,7 +58,8 @@ function AllArticlesPage({ contract, account })
                                     cid: article.cid,
                                     title: article.title,
                                     publishedTime: article.publishedTime,
-                                    updatedTime: article.updatedTime,
+                                    likes: article.likes,
+                                    dislikes: article.dislikes,
                                     author: article.author
                                 }
                             );
@@ -90,7 +93,10 @@ function AllArticlesPage({ contract, account })
             setSelectedArticleBody(articleData);
 
             const metaData = articles.find((article) => article.cid === cid);
-            setSelectedArticleMeta(metaData)
+            setSelectedArticleMeta(metaData);
+
+            const voted = await contract.methods.getHasVoted(metaData.articleId).call({ from: account });
+            setHasVoted(voted);
         }
         catch (err) {
             console.log('Article could not be loaded from Pinata gateway:', err);
@@ -129,20 +135,65 @@ function AllArticlesPage({ contract, account })
         }
     };
 
+    const voteOnArticle = async (articleId, isLike) =>
+    {
+        setStatus('voting');
+        try 
+        {
+            await contract.methods.voteOnArticle(articleId, isLike).send({ from: account });
+
+            setArticles((prevArticles) => 
+            (
+                prevArticles.map((article) => 
+                (
+                    article.articleId === articleId ?
+                    {
+                        ...article,
+                        likes: isLike ? Number(article.likes) + 1 : article.likes,
+                        dislikes: !isLike ? Number(article.dislikes) + 1 : article.dislikes
+                    }
+                    : article
+                ))
+            ));
+
+            if (selectedArticleMeta?.articleId === articleId)
+            {
+                setSelectedArticleMeta((prevMetaData) =>
+                (
+                    {
+                        ...prevMetaData,
+                        likes: isLike ? Number(prevMetaData.likes) + 1 : prevMetaData.likes,
+                        dislikes: !isLike ? Number(prevMetaData.dislikes) + 1 : prevMetaData.dislikes
+                    }
+                ));
+            }
+            setHasVoted(true);
+        }
+        catch (err)
+        {
+            console.error('Voting failed:', err);
+            alert('You have already voted!');
+        }
+        finally
+        {
+            setStatus('ready');
+        }
+    };
+
     return (
         <div>
             <Container fluid>
                 <Row>
-                    <Col md={2} className='d-flex flex-column align-items-center mt-5 p-4 gap-5 side-bar'>
+                    <Col md={2} className='d-flex flex-column align-items-center mt-2 p-4 gap-3 side-bar'>
                         <Button
                             variant='dark'
                             size='lg'
                             disabled={status !== 'ready'}
                             onClick={() => 
                                 {
-                                    setFilteredArticles('all'),
-                                    setSelectedArticleBody(null),
-                                    setSelectedArticleMeta(null)
+                                    setFilteredArticles('all');
+                                    setSelectedArticleBody(null);
+                                    setSelectedArticleMeta(null);
                                 }
                             }
                         >
@@ -154,22 +205,23 @@ function AllArticlesPage({ contract, account })
                             disabled={status !== 'ready'}
                             onClick={() => 
                                 {
-                                    setFilteredArticles('mine'),
-                                    setSelectedArticleBody(null),
-                                    setSelectedArticleMeta(null)
+                                    setFilteredArticles('mine');
+                                    setSelectedArticleBody(null);
+                                    setSelectedArticleMeta(null);
                                 }
                             }
                         >
                             My Articles
                         </Button>
-                    </Col> 
-                    <Col md={10}>
+                    </Col>
+                    <Col md={10} className='pe-5'>
                         <h1 className='text-center pb-2'>
                             {filteredArticles === 'all' ? 'All Articles' : 'My Articles'}
                         </h1>
                         {status === 'loading' && <IsLoading msg='Loading Articles...' />}
                         {status === 'deleting' && <IsLoading msg='Deleting Article...' />}
                         {status === 'fetching' && <IsLoading msg='Fetching Article...' />}
+                        {status === 'voting' && <IsLoading msg='Processing Vote...' />}
                         {
                             status === 'ready' && 
                             <>
@@ -180,6 +232,8 @@ function AllArticlesPage({ contract, account })
                                         articleMetaData={selectedArticleMeta}
                                         account={account}
                                         onDelete={deleteArticle}
+                                        onVote={voteOnArticle}
+                                        hasVoted={hasVoted}
                                     /> :
                                     <ListArticles 
                                         articles={articles}
