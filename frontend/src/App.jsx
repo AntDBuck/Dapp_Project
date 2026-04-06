@@ -15,10 +15,7 @@ function App()
 {
   const [account, setAccount] = useState('');
   const [contract, setContract] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [connected, setConnected] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
   
   useEffect(() => 
   {
@@ -30,20 +27,15 @@ function App()
         {
           window.web3 = new Web3(window.ethereum);
           await loadBlockchainData();
-          setConnected(true);
-          setSuccessMsg('Blockchain loaded!');
         }
         catch(err)
         {
-          setErrorMsg('Error! Could not connect to blockchain!');
-          setLoading(false);
+          console.log('Could not connect account:', err);
           setConnected(false);
         }
       }
       else 
       {
-        setErrorMsg('Browser not connected!');
-        setLoading(false);
         setConnected(false);
       }
     };
@@ -53,152 +45,44 @@ function App()
    
   const loadBlockchainData = async () => 
   {
-    const web3 = new Web3(window.ethereum);
-    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-    setAccount(accounts[0]);
-
-    const networkId = await web3.eth.net.getId()
-    const newsMakerData = NewsMakerDapp.networks[networkId]
-
-    if (newsMakerData) 
+    try
     {
-      const newsMakerDapp = new web3.eth.Contract(NewsMakerDapp.abi, newsMakerData.address);
-      setContract(newsMakerDapp);
-      setLoading(false);
-    } 
-    else 
+      const web3 = new Web3(window.ethereum);
+      const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+      setAccount(accounts[0]);
+
+      const networkId = await web3.eth.net.getId()
+      const newsMakerData = NewsMakerDapp.networks[networkId]
+
+      if (newsMakerData) 
+      {
+        const newsMakerDapp = new web3.eth.Contract(NewsMakerDapp.abi, newsMakerData.address);
+        setContract(newsMakerDapp);
+        setConnected(true);
+      } 
+      else 
+      {
+        setConnected(false);
+      }
+    }
+    catch (err)
     {
-      setErrorMsg('Error! Can not get smart contract!');
+      console.error('Error, blockchain failed to load:', err);
       setConnected(false);
     }
   };
 
-  // async loadMyAllFiles() {
-  //   this.setState({ allFiles: [] })
-  //   const totalFilesCount = await this.state.ourStorageDapp.methods.getTotalFileCount().call();
-  //   for (let i = totalFilesCount; i >= 1; i--) {
-  //     const file = await this.state.ourStorageDapp.methods.getFileOf(i).call();
-  //     if (file.fileName !== "0deleted_") {
-  //       this.setState({ allFiles: [...this.state.allFiles, file] })
-  //     }
-  //   }
-  // }
-
-  // async deleteFile(_id) {
-  //   this.setState({ loading: true })
-  //   this.state.ourStorageDapp.methods.deleteFile(_id)
-  //     .send({ from: this.state.account })
-  //     .on('confirmation', async () => {
-  //       await this.loadMyAllFiles();
-  //       this.setState({ loading: false })
-  //     })
-  //     .on('error', (error) => {
-  //       console.error(error);
-  //       this.setState({ loading: false })
-  //     });
-  // }
-
-  // captureFile(event) {
-  //   event.preventDefault()
-  //   const file = event.target.files[0]
-  //   this.setState({ file: file, fileType: file.type })
-  //   this.setValues(file.name, this.convertBytes(file.size))
-  // }
-
-  // setValues(_name, _size) {
-  //   const fileNameBox = document.getElementById('fileNameBox');
-  //   const fileTypeBox = document.getElementById('fileTypeBox');
-  //   const fileSizeBox = document.getElementById('fileSizeBox');
-
-  //   fileNameBox.value = _name;
-  //   fileTypeBox.value = this.state.fileType;
-  //   fileSizeBox.value = _size;
-  //   this.setState({ showFileDetails: true })
-  // }
-
-  // async uploadFile(_name, _des) {
-  //   if (!this.state.file) {
-  //     alert("Please select a file first");
-  //     return;
-  //   }
-
-  //   this.setState({ loading: true });
-  //   try {
-  //     const formData = new FormData();
-  //     formData.append('article', this.state.file);
-
-  //     const response = await fetch('http://localhost:5000/upload', {
-  //       method: 'POST',
-  //       body: formData
-  //     });
-
-  //     const data = await response.json();
-  //     const ipfsHash = data.cid;
-      
-
-  //     await this.state.ourStorageDapp.methods.uploadFile(
-  //       ipfsHash,
-  //       this.state.file.size,
-  //       this.state.fileType,
-  //       _name,
-  //       _des
-  //     ).send({ from: this.state.account })
-  //       .on('confirmation', async () => {
-  //         await this.loadMyAllFiles();
-  //         this.setState({ loading: false, file: null, showFileDetails: false });
-  //       });
-
-  //   } catch (err) {
-  //     console.error('Upload failed:', err);
-  //     this.setState({ loading: false });
-  //   }
-  // }
-
-  // convertBytes(bytes) {
-  //   const sizes = ['Bytes', 'KB', 'MB', 'GB', 'TB'];
-  //   if (bytes === 0) return '0 Byte';
-  //   const i = Math.floor(Math.log(bytes) / Math.log(1024));
-  //   return Math.round(bytes / Math.pow(1024, i), 2) + ' ' + sizes[i];
-  // // }
-
-  //   <Main account={account} allFiles={this.state.allFiles} deleteFile={this.deleteFile} />
-  //   <UploadFile account={this.state.account} uploadFile={this.uploadFile} captureFile={this.captureFile} showFileDetails={this.state.showFileDetails} />
-
-  // return (
-  //   <HashRouter>
-  //     <div>
-  //       {
-  //         !connected
-  //           ? 
-  //             <>
-  //               <Navbar account={account} />
-  //               {
-  //                 loading ? 
-  //                   <div className="text-center m-5">
-  //                     <div className="spinner-border bg-light m-auto" role="status"></div>
-  //                   </div>
-  //                 :
-  //                 <Switch>
-  //                     <Route path="/" exact>
-  //                     </Route>
-  //                     <Route path="/uploadfiles" exact>
-  //                     </Route>
-  //                 </Switch>
-  //               }
-  //             </> 
-  //           : 
-  //             <NotConnected />
-  //       }
-  //     </div>
-  //   </HashRouter>
-  // );
-
   return (
     <HashRouter>
-      <Header account={account} />
-      <main>
-        <AppRoutes contract={contract} account={account} />
-      </main>
+      {
+        !connected ? <NotConnected /> :
+        <>
+          <Header account={account} />
+          <main>
+            <AppRoutes contract={contract} account={account} />
+          </main>
+        </>
+      }
     </HashRouter>
   );
 };
