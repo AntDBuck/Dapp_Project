@@ -8,10 +8,10 @@ function Header({ account })
   return (
     <Navbar bg='dark' data-bs-theme='dark' expand='lg' className='header'>
       <Container fluid>
-        <Navbar.Brand>📰 News Maker Dapp</Navbar.Brand>
+        <Navbar.Brand className='logo'>📰 News Maker Dapp</Navbar.Brand>
         <Navbar.Toggle />
         <Navbar.Collapse>
-          <Nav className='mx-auto gap-1 ps-5'>
+          <Nav className='mx-auto gap-3 ps-5'>
             <Nav.Link as={NavLink} to='/'>Home</Nav.Link>
             <Nav.Link as={NavLink} to='/all-articles'>All Articles</Nav.Link>
             <Nav.Link as={NavLink} to='/create-article'>Create Article</Nav.Link>
