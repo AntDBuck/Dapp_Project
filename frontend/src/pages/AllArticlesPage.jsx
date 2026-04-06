@@ -13,7 +13,7 @@ function AllArticlesPage({ contract, account })
     const [selectedArticleMeta, setSelectedArticleMeta] = useState(null);
     const [hasVoted, setHasVoted] = useState(false);
 
-    useEffect(() => 
+    useEffect(() =>
     {
         const loadArticles = async () =>
         {
@@ -184,12 +184,12 @@ function AllArticlesPage({ contract, account })
         <div>
             <Container fluid>
                 <Row>
-                    <Col md={2} className='d-flex flex-column align-items-center mt-2 p-4 gap-3 side-bar'>
+                    <Col md={2} className='d-flex flex-column align-items-center pt-5 gap-5 side-bar'>
                         <Button
                             variant='dark'
                             size='lg'
                             disabled={status !== 'ready'}
-                            onClick={() => 
+                            onClick={() =>
                                 {
                                     setFilteredArticles('all');
                                     setSelectedArticleBody(null);
@@ -214,7 +214,7 @@ function AllArticlesPage({ contract, account })
                             My Articles
                         </Button>
                     </Col>
-                    <Col md={10} className='pe-5'>
+                    <Col md={10} className='pe-5 pt-3 ps-5'>
                         <h1 className='text-center pb-2'>
                             {filteredArticles === 'all' ? 'All Articles' : 'My Articles'}
                         </h1>
