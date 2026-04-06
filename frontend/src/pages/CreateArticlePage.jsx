@@ -253,7 +253,7 @@ function CreateArticlePage({ account, contract })
             }}
         >
             <Row>
-                <Col md={2} className='d-flex flex-column align-items-center p-4 gap-3 side-bar'>
+                <Col md={2} className='d-flex flex-column align-items-center p-4 gap-4 side-bar'>
                     <DragBlock blockType='Sub-Heading' disabled={status} />
                     <DragBlock blockType='Text' disabled={status} />
                     <DragBlock blockType='Image' disabled={status || imgCount >= 4} />
@@ -266,7 +266,7 @@ function CreateArticlePage({ account, contract })
                         )
                     }
                 </Col>
-                <Col md={10} className='p-5 border'>
+                <Col md={10} className='p-5'>
                     {
                         status ? <IsLoading msg='Publishing Article...' /> :
                         <>
