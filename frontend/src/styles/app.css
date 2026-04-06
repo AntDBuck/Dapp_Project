@@ -4,13 +4,16 @@
 
 .header {
     min-height: 10vh;
+    font-size: 1.2rem;
+}
+
+.logo {
+    font-size: 1.5rem !important;
 }
 
 main {
     background-color: #ddd;
     min-height: 90vh;
-    padding-top: 1rem;
-    padding-bottom: 1rem;
 }
 
 .article-card-section {
@@ -22,19 +25,20 @@ main {
 .article-card-content {
     display: flex;
     justify-content: center;
+    margin-top: 1rem;
 }
 
 .drag-block {
-    width: 100%;
+    width: 80%;
     text-align: center;
-    padding: 0.5rem;
     cursor: grab;
+    min-height: 3.5rem;
 }
 
 .drop-box {
     width: 100%;
     min-height: 5rem;
-    border: 2px solid grey;
+    border: 2px solid #555;
     display: flex;
     padding: 0.1rem;
     box-sizing: border-box;
@@ -43,7 +47,14 @@ main {
 .side-bar {
     position: sticky;
     align-self: flex-start;
-    top: 1rem;
+    min-height: 90vh;
+    background-color: #bbb;
+    border-right: 1px solid #444;
+}
+
+.side-bar button {
+    min-height: 3.5rem;
+    width: 80%;
 }
 
 .inputs {
@@ -65,4 +76,8 @@ main {
 .inputs-img {
     width: 100%;
     height: auto;
+}
+
+.article-view {
+    background-color: #eee;
 }
