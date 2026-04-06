@@ -10,7 +10,6 @@ function ListArticles({ articles, onArticleClick }) {
                         key={article.articleId}
                         onClick={() => onArticleClick(article.cid)}
                         variant='outline-dark'
-                        className='article-button'
                     >
                         <h5 className='mt-2'><b>{article.title}</b></h5>
                         <div className='article-card-content gap-4'>
