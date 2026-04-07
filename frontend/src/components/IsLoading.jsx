@@ -1,5 +1,12 @@
 import { Spinner } from "react-bootstrap";
 
+/**
+ * IsLoading functional component.
+ * Displays loading spinner and custom message.
+ * @param {string} msg A String message next to a spinner.
+ * @component
+ * @returns {JSX.Element} The rendered IsLoading component.
+ */
 function IsLoading({ msg }) 
 {
     return (

@@ -4,6 +4,19 @@ import IsLoading from "../components/IsLoading";
 import ListArticles from "../components/ListArticles";
 import ViewArticle from "../components/ViewArticle";
 
+/**
+ * AllArticlesPage functional component.
+ * Features:
+ * - Loads all article metadata from the blockchain.
+ * - Shows all articles or user's articles.
+ * - Fetches an article from Pinata's IPFS Gateway.
+ * - Enables deletion and voting of articles.
+ * - Renders ViewArticle and ListArticles.
+ * @param {Contract} props.contract The smart contract.
+ * @param {string} props.account The hexidecimal string representing user's account.
+ * @component
+ * @returns {JSX.Element} Returns the all articles page component.
+ */
 function AllArticlesPage({ contract, account }) 
 {
     const [articles, setArticles] = useState([]);
@@ -15,6 +28,11 @@ function AllArticlesPage({ contract, account })
 
     useEffect(() =>
     {
+        /**
+         * Gets either all or user's article metadata from the blockchain.
+         * Article state is updated.
+         * Deleted articles are filtered out.
+         */
         const loadArticles = async () =>
         {
             if (!contract || !account ) return;
@@ -83,6 +101,13 @@ function AllArticlesPage({ contract, account })
     }, [contract, account, filteredArticles]
     );
 
+    /**
+     * Handles article click event.
+     * An article's body data is fetched from Pinata's IPFS Gateway via the article's CID.
+     * The article's metadata is found via CID filtering. 
+     * Voting check is fetched from the blockchain. 
+     * @param {string} cid The content identifer of the clicked article.
+     */
     const articleClick = async (cid) => 
     {
         setStatus('fetching');
@@ -108,6 +133,11 @@ function AllArticlesPage({ contract, account })
         }
     };
 
+    /**
+     * Handles the deletion click event of a specific article.
+     * Article CID is set to empty string and flagged as deleted (blockchain).
+     * @param {number} articleId The article ID of the article to delete.
+     */
     const deleteArticle = async (articleId) =>
     {
         setStatus('deleting');
@@ -135,6 +165,13 @@ function AllArticlesPage({ contract, account })
         }
     };
 
+    /**
+     * Handles the voting click event on a specific article.
+     * Also updates state to show incremented voting change.
+     * Alert handles already voted check.
+     * @param {number} articleId The article ID of the article to vote on.
+     * @param {bool} isLike A boolean flag to check if vote is like or dislike.
+     */
     const voteOnArticle = async (articleId, isLike) =>
     {
         setStatus('voting');

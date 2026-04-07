@@ -1,6 +1,12 @@
 import { Container, Row, Col } from "react-bootstrap";
 import newsImg from '../assets/news-home.jpg';
 
+/**
+ * HomePage functional component
+ * Displays the welcome screen once connected with MetaMask account.
+ * @component
+ * @returns {JSX.Element} The rendered HomePage component.
+ */
 function HomePage()
 {
     return (

@@ -3,6 +3,13 @@ import { Navbar, Nav, Container } from 'react-bootstrap';
 import Identicon from 'identicon.js';
 import { formatAddress } from "./UtilTools";
 
+/**
+ * Header functional component.
+ * Displays navbar, account name, and page links.
+ * @param {string} props.account The hexidecimal string representing user's account.
+ * @component
+ * @returns {JSX.Element} The rendered Header component.
+ */
 function Header({ account })
 {
   return (

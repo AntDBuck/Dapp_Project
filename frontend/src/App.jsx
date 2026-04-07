@@ -4,13 +4,22 @@ import { HashRouter } from "react-router-dom";
 import Web3 from 'web3';
 import NewsMakerDapp from './abis/NewsMakerDapp.json';
 
-import './styles/app.css';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
 import Header from './components/Header';
 import AppRoutes from './AppRoutes';
 import NotConnected from './components/NotConnected';
 
+import './styles/app.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
+
+/**
+ * Main App functional component.
+ * Features:
+ * - Ties the whole application together via the rendering of app routing.
+ * - Smart contract is loaded.
+ * - MetaMask account connection.
+ * @component
+ * @returns {JSX.Element} The Rendered App component.
+ */
 function App()
 {
   const [account, setAccount] = useState('');
@@ -19,14 +28,19 @@ function App()
   
   useEffect(() => 
   {
+    /**
+     * Create a Web3 instance and passes it down to loadBlockchainData function 
+     * so that MetaMask account connection can be established and blockchain data 
+     * can be loaded.
+     */
     const loadWeb3 = async () =>
     {
       if (window.ethereum)
       {
         try 
         {
-          window.web3 = new Web3(window.ethereum);
-          await loadBlockchainData();
+          const web3 = new Web3(window.ethereum);
+          await loadBlockchainData(web3);
         }
         catch(err)
         {
@@ -43,11 +57,14 @@ function App()
   }, []
   );
    
-  const loadBlockchainData = async () => 
+  /**
+   * Handles the MetaMask account connection, gets network ID, and loads smart contract.
+   * @param {Web3} web3 The Web3 instance.
+   */
+  const loadBlockchainData = async (web3) => 
   {
     try
     {
-      const web3 = new Web3(window.ethereum);
       const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
       setAccount(accounts[0]);
 

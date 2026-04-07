@@ -1,3 +1,9 @@
+/**
+ * NotConnected functional component
+ * Displays instructions on how to connect to Dapp.
+ * @component
+ * @returns {JSX.Element} The rendered NotConnected component.
+ */
 export default function NotConnected() {
     return (
         <div 

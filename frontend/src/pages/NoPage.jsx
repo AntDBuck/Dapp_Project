@@ -1,5 +1,11 @@
 import dinoImg from '../assets/no-page-dino.png'
 
+/**
+ * NoPage functional component.
+ * Displays a funny image and message to inform of incorrect page/route.
+ * @component
+ * @returns {JSX.Element} The rendered NoPage page component.
+ */
 function NoPage()
 {
     return (

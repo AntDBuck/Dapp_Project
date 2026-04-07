@@ -1,6 +1,18 @@
 import { Container, Row, Col, Button } from "react-bootstrap";
 import { formatTime } from "./UtilTools";
 
+/**
+ * ViewArticle functional component.
+ * Renders and displays the requested article.
+ * @param {Object} props.articleBody The article data arranged in rows and columns.
+ * @param {Object} props.articleMetaData The metadata about the article (stored on blockchain).
+ * @param {string} props.account The hexidecimal string representing user's account.
+ * @param {function} props.onDelete Refernce to delete function in parent. Article ID is passed back.
+ * @param {function} props.onVote Reference to voting function in parent. Article ID and like check are passed back. 
+ * @param {bool} props.hasVoted A boolean flag that indicates whether account has voted already.
+ * @component
+ * @returns {JSX.Element} The rendered article.
+ */
 function ViewArticle({ articleBody, articleMetaData, account, onDelete, onVote, hasVoted }) 
 {
     const isOwner = articleMetaData.author.toLowerCase() === account.toLowerCase();
