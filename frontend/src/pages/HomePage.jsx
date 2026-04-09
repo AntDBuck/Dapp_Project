@@ -32,7 +32,11 @@ function HomePage()
                     </h4>
                 </Col>
                 <Col md={6}>
-                    <img src={newsImg} alt='A stack of newspapers.' className='w-100 rounded' />
+                    <img 
+                        src={newsImg} 
+                        alt='A stack of newspapers.' 
+                        className='w-100 rounded border border-black' 
+                    />
                 </Col>
             </Row>
         </Container>
