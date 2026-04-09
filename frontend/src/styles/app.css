@@ -32,7 +32,7 @@ main {
     width: 80%;
     text-align: center;
     cursor: grab;
-    min-height: 3.5rem;
+    min-height: 4rem;
 }
 
 .drop-box {
@@ -45,16 +45,14 @@ main {
 }
 
 .side-bar {
-    position: sticky;
-    align-self: flex-start;
-    min-height: 90vh;
     background-color: #bbb;
     border-right: 1px solid #444;
+    min-height: 90vh;
 }
 
-.side-bar button {
-    min-height: 3.5rem;
-    width: 80%;
+.side-bar-buttons {
+    position: sticky;
+    top: 30vh;
 }
 
 .inputs {

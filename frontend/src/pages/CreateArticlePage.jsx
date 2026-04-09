@@ -17,7 +17,7 @@ function DragBlock({ blockType, disabled })
     const { ref } = useDraggable({ id: blockType, disabled });
 
     return ( 
-        <Button ref={ref} disabled={disabled} variant='dark' className='drag-block'>
+        <Button ref={ref} disabled={disabled} variant='dark' size='lg' className='drag-block'>
             {blockType}
         </Button>
     );
@@ -300,6 +300,8 @@ function CreateArticlePage({ account, contract })
             console.log('Article uploaded:', cid);
 
             await contract.methods.publishArticle(cid, articleTitle).send({ from: account });
+
+            alert('Article Successfully Published!');
         }
         catch (err) 
         {
@@ -324,18 +326,20 @@ function CreateArticlePage({ account, contract })
             }}
         >
             <Row>
-                <Col md={2} className='d-flex flex-column align-items-center p-4 gap-4 side-bar'>
-                    <DragBlock blockType='Sub-Heading' disabled={status} />
-                    <DragBlock blockType='Text' disabled={status} />
-                    <DragBlock blockType='Image' disabled={status || imgCount >= 4} />
-                    {
-                        imgCount >= 4 && 
-                        (
-                            <small className='text-center text-danger'>
-                                A limit of 4 images per article
-                            </small>
-                        )
-                    }
+                <Col md={2} className='side-bar'>
+                    <div className='d-flex flex-column align-items-center gap-5 p-2 mt-5 side-bar-buttons'>
+                        <DragBlock blockType='Sub-Heading' disabled={status} />
+                        <DragBlock blockType='Text' disabled={status} />
+                        <DragBlock blockType='Image' disabled={status || imgCount >= 4} />
+                        {
+                            imgCount >= 4 && 
+                            (
+                                <small className='text-center text-danger'>
+                                    <b>A limit of 4 images per article!</b>
+                                </small>
+                            )
+                        }       
+                    </div>
                 </Col>
                 <Col md={10} className='p-5'>
                     {

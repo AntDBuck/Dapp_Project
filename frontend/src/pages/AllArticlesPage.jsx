@@ -234,35 +234,39 @@ function AllArticlesPage({ contract, account })
         <div>
             <Container fluid>
                 <Row>
-                    <Col md={2} className='d-flex flex-column align-items-center pt-5 gap-5 side-bar'>
-                        <Button
-                            variant='dark'
-                            size='lg'
-                            disabled={status !== 'ready'}
-                            onClick={() =>
-                                {
-                                    setFilteredArticles('all');
-                                    setSelectedArticleBody(null);
-                                    setSelectedArticleMeta(null);
+                    <Col md={2} className='side-bar'>
+                        <div className='d-flex flex-column gap-5 mt-5 p-2 side-bar-buttons'>
+                            <Button
+                                variant='dark'
+                                size='lg'
+                                disabled={status !== 'ready'}
+                                className='py-3'
+                                onClick={() =>
+                                    {
+                                        setFilteredArticles('all');
+                                        setSelectedArticleBody(null);
+                                        setSelectedArticleMeta(null);
+                                    }
                                 }
-                            }
-                        >
-                            All Articles
-                        </Button>
-                        <Button
-                            variant='dark'
-                            size='lg'
-                            disabled={status !== 'ready'}
-                            onClick={() => 
-                                {
-                                    setFilteredArticles('mine');
-                                    setSelectedArticleBody(null);
-                                    setSelectedArticleMeta(null);
+                            >
+                                All Articles
+                            </Button>
+                            <Button
+                                variant='dark'
+                                size='lg'
+                                disabled={status !== 'ready'}
+                                className='py-3'
+                                onClick={() => 
+                                    {
+                                        setFilteredArticles('mine');
+                                        setSelectedArticleBody(null);
+                                        setSelectedArticleMeta(null);
+                                    }
                                 }
-                            }
-                        >
-                            My Articles
-                        </Button>
+                            >
+                                My Articles
+                            </Button>
+                        </div>
                     </Col>
                     <Col md={10} className='pe-5 pt-3 ps-5'>
                         <h1 className='text-center pb-2'>

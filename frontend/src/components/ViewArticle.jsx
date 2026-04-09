@@ -100,7 +100,7 @@ function ViewArticle({ articleBody, articleMetaData, account, onDelete, onVote, 
                                         {
                                             block.blockType === 'Sub-Heading' && 
                                             (
-                                                <h3 className='text-center'>{block.blockContent}</h3>
+                                                <h2 className='text-center mb-4'>{block.blockContent}</h2>
                                             )
                                         }
                                         {
@@ -112,7 +112,10 @@ function ViewArticle({ articleBody, articleMetaData, account, onDelete, onVote, 
                                         {
                                             block.blockType === 'Image' && 
                                             (
-                                                <img src={block.blockContent} className='w-100' />
+                                                <img 
+                                                    src={block.blockContent} 
+                                                    className='w-100 mb-3 border border-black rounded' 
+                                                />
                                             )
                                         }
                                     </Col>
