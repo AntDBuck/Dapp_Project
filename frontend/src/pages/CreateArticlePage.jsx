@@ -334,9 +334,9 @@ function CreateArticlePage({ account, contract })
                         {
                             imgCount >= 4 && 
                             (
-                                <small className='text-center text-danger'>
+                                <p className='text-center text-danger'>
                                     <b>A limit of 4 images per article!</b>
-                                </small>
+                                </p>
                             )
                         }       
                     </div>
