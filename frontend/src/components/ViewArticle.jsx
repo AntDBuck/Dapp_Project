@@ -7,13 +7,13 @@ import { formatTime } from "./UtilTools";
  * @param {Object} props.articleBody The article data arranged in rows and columns.
  * @param {Object} props.articleMetaData The metadata about the article (stored on blockchain).
  * @param {string} props.account The hexidecimal string representing user's account.
- * @param {function} props.onDelete Refernce to delete function in parent. Article ID is passed back.
- * @param {function} props.onVote Reference to voting function in parent. Article ID and like check are passed back. 
- * @param {bool} props.hasVoted A boolean flag that indicates whether account has voted already.
+ * @param {function} props.onDelete Refernce to delete function in parent.
+ * @param {function} props.onVote Reference to voting function in parent.
+ * @param {Number} props.prevVote The old vote value.
  * @component
  * @returns {JSX.Element} The rendered article.
  */
-function ViewArticle({ articleBody, articleMetaData, account, onDelete, onVote, hasVoted }) 
+function ViewArticle({ articleBody, articleMetaData, account, onDelete, onVote, prevVote }) 
 {
     const isOwner = articleMetaData.author.toLowerCase() === account.toLowerCase();
 
@@ -23,9 +23,16 @@ function ViewArticle({ articleBody, articleMetaData, account, onDelete, onVote, 
         onDelete(articleMetaData.articleId);
     };
 
-    const voteCheck = (isLike) =>
+    /**
+     * Callback function to parent.
+     * Handles the passing of a new vote after a click.
+     * Enables unvoting functionailty.
+     * @param {Number} newVote A number that represents the button clicked.
+     */
+    const voteCheck = (newVote) =>
     {
-        onVote(articleMetaData.articleId, isLike);
+        const trueVote = newVote === prevVote ? 0 : newVote;
+        onVote(articleMetaData.articleId, trueVote, prevVote);
     };
 
     return (
@@ -39,24 +46,28 @@ function ViewArticle({ articleBody, articleMetaData, account, onDelete, onVote, 
                 <div className='d-flex flex-column gap-4'>
                     <div className='d-flex gap-3'>
                         {
-                            hasVoted && 
-                            <small className='d-flex align-items-center'>
-                                <b>Already Voted!</b>
+                            prevVote !== 0 && 
+                            <small 
+                                className={`
+                                    d-flex 
+                                    align-items-center 
+                                    ${prevVote === 1 ? 'text-success' : 'text-danger'}
+                                `}
+                            >
+                                <b>{prevVote === 1 ? 'Article Liked' : 'Article Disliked'}</b>
                             </small>
                         }
                         <Button 
                             variant='outline-success'
                             size='lg'
-                            disabled={hasVoted}
-                            onClick={() => voteCheck(true)}
+                            onClick={() => voteCheck(1)}
                         >
                             👍 {Number(articleMetaData.likes)}
                         </Button>
                         <Button 
                             variant='outline-danger'
                             size='lg'
-                            disabled={hasVoted}
-                            onClick={() => voteCheck(false)}
+                            onClick={() => voteCheck(-1)}
                         >
                             👎 {Number(articleMetaData.dislikes)}
                         </Button>

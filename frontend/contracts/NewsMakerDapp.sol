@@ -4,7 +4,6 @@ pragma solidity >=0.4.22 <0.9.0;
 /// @title Smart contract for News Maker Dapp.
 contract NewsMakerDapp
 {
-    // Globally define name of contract.
     string public contractName = "News Maker Dapp";
 
     // Globally define number of articles and map count to each article.
@@ -14,10 +13,10 @@ contract NewsMakerDapp
     // Mapping of article indices by author from global article source.
     mapping(address => uint256[]) public articlesByAuthor;
 
-    // Mapping of article id => account address => has voted true or false. 
-    mapping(uint256 => mapping(address => bool)) hasVoted;
+    // Mapping of article id => account address => vote type: 
+    // (-1, dislike), (0, not voted), and (1, like). 
+    mapping(uint256 => mapping(address => int8)) voteType;
 
-    // Article type.
     struct Article 
     {
         uint256 articleId;
@@ -33,7 +32,7 @@ contract NewsMakerDapp
     // Article events defined for uploading, deleting, and voting.
     event ArticlePublishedEvent(address author, uint256 articleId);
     event ArticleDeletedEvent(address author, uint256 articleId);
-    event VoteOnArticleEvent(address voter, uint256 _articleId, bool isLike);
+    event VoteOnArticleEvent(address voter, uint256 articleId, int8 newVote);
 
     /// @notice Returns the total number of articles.
     /// @return count The total number of articles globally.
@@ -56,10 +55,8 @@ contract NewsMakerDapp
         // New count for all non-deleted articles.
         uint nonDeletedCount = 0;
 
-        // Loop through articleCount...
         for (uint index = 1; index <= articleCount; index++)
         {
-            // Increment non-deleted article count if article delete flag is not deleted.
             if (!articles[index].deleted)
             {
                 nonDeletedCount++;
@@ -68,10 +65,9 @@ contract NewsMakerDapp
 
         // New article array to hold all non-deleted articles.
         Article[] memory allArticles = new Article[](nonDeletedCount);
-        // Index for allArticles.
+
         uint newIndex = 0;
 
-        // Loop through articleCount...
         for (uint index = 1; index <= articleCount; index++)
         {
             // Add article to allArticles array if article has not been deleted.
@@ -98,20 +94,17 @@ contract NewsMakerDapp
     /// @param _title The title used in the article.
     function publishArticle(string memory _cid, string memory _title) public 
     {
-        // Non-empty field checks.
         require(
             bytes(_cid).length > 0 && 
             bytes(_title).length > 0 && 
             msg.sender != address(0)
         );
 
-        // Increment global article count.
         articleCount++;
 
         // New article ID mapped to incremented global count.
         uint256 newArticleId = articleCount;
 
-        // Define new article.
         Article memory newArticle = Article(
             newArticleId,
             _cid,
@@ -139,49 +132,61 @@ contract NewsMakerDapp
         // Get reference to article from global store.
         Article storage articleRef = articles[_articleId];
 
-        // Authorisation and deletion check.
         require(articleRef.author == msg.sender, "Must be author of article to delete!");
         require(articleRef.deleted != true, "Article has already been deleted!");
 
-        // Set cid to empty strings and set deleted flag to true.
         articleRef.cid = "";
         articleRef.deleted = true;
 
         emit ArticleDeletedEvent(msg.sender, _articleId);
     }
 
-    /// @notice Adds like/dislike to specified article from a specific voter.
+    /// @notice Adds like/dislike to specified article from a specific voter. Also removes previous vote.
     /// @param _articleId The ID of the article which is voted on.
-    /// @param isLike The like/dislike boolean check.
-    function voteOnArticle(uint256 _articleId, bool isLike) public
+    /// @param newVote The new vote which represents like/dislike/no vote value.
+    function voteOnArticle(uint256 _articleId, int8 newVote) public
     {
-        // Require that this account has not liked/disliked this article.
-        require(!hasVoted[_articleId][msg.sender], "Account already voted!");
+        require(newVote == -1 || newVote == 0 || newVote == 1, 'Vote value must be -1, 0, or 1!');
 
         // Get reference to article from global store.
         Article storage articleRef = articles[_articleId];
 
-        // Check if voter liked or disliked, then increment matching type.
-        if (isLike)
+        require(articleRef.deleted != true, "Can not vote on a deleted article!");
+
+        // Get previous vote.
+        int8 prevVote = voteType[_articleId][msg.sender];
+
+        // Decrement previous vote.
+        if (prevVote == 1)
+        {
+            articleRef.likes--;
+        }
+        else if (prevVote == -1)
+        {
+            articleRef.dislikes--;
+        }
+
+        // Increment vote.
+        if (newVote == 1)
         {
             articleRef.likes++;
         }
-        else 
+        else if (newVote == -1)
         {
             articleRef.dislikes++;
         }
 
-        // Update mapping so that voter can not vote on this article again.
-        hasVoted[_articleId][msg.sender] = true;
+        // Reset vote.
+        voteType[_articleId][msg.sender] = newVote;
 
-        emit VoteOnArticleEvent(msg.sender, _articleId, isLike);
+        emit VoteOnArticleEvent(msg.sender, _articleId, newVote);
     }
 
-    /// @notice Returns a boolean check of user voting on a specific article.
+    /// @notice Returns a check value of user voting on a specific article.
     /// @param _articleId The ID of the article to check.
-    /// @return voteCheck A boolean check on profile voting for this article.
-    function getHasVoted(uint256 _articleId) public view returns (bool voteCheck)
+    /// @return voteTypeCheck A check on profile voting for this article.
+    function getVoteType(uint256 _articleId) public view returns (int8 voteTypeCheck)
     {
-        voteCheck = hasVoted[_articleId][msg.sender];
+        voteTypeCheck = voteType[_articleId][msg.sender];
     }
 }

@@ -24,7 +24,7 @@ function AllArticlesPage({ contract, account })
     const [filteredArticles, setFilteredArticles] = useState('all');
     const [selectedArticleBody, setSelectedArticleBody] = useState(null);
     const [selectedArticleMeta, setSelectedArticleMeta] = useState(null);
-    const [hasVoted, setHasVoted] = useState(false);
+    const [voteType, setVoteType] = useState(Number(0));
 
     useEffect(() =>
     {
@@ -54,8 +54,8 @@ function AllArticlesPage({ contract, account })
                             cid: article.cid,
                             title: article.title,
                             publishedTime: article.publishedTime,
-                            likes: article.likes,
-                            dislikes: article.dislikes,
+                            likes: Number(article.likes),
+                            dislikes: Number(article.dislikes),
                             author: article.author
                         }
                     )))
@@ -76,8 +76,8 @@ function AllArticlesPage({ contract, account })
                                     cid: article.cid,
                                     title: article.title,
                                     publishedTime: article.publishedTime,
-                                    likes: article.likes,
-                                    dislikes: article.dislikes,
+                                    likes: Number(article.likes),
+                                    dislikes: Number(article.dislikes),
                                     author: article.author
                                 }
                             );
@@ -105,7 +105,7 @@ function AllArticlesPage({ contract, account })
      * Handles article click event.
      * An article's body data is fetched from Pinata's IPFS Gateway via the article's CID.
      * The article's metadata is found via CID filtering. 
-     * Voting check is fetched from the blockchain. 
+     * Voting type is fetched from blockchain. 
      * @param {string} cid The content identifer of the clicked article.
      */
     const articleClick = async (cid) => 
@@ -120,8 +120,10 @@ function AllArticlesPage({ contract, account })
             const metaData = articles.find((article) => article.cid === cid);
             setSelectedArticleMeta(metaData);
 
-            const voted = await contract.methods.getHasVoted(metaData.articleId).call({ from: account });
-            setHasVoted(voted);
+            const voted = await contract.methods.getVoteType(metaData.articleId).call({ from: account });
+
+            if (voted === undefined) setVoteType(Number(0));
+            else setVoteType(voted);
         }
         catch (err) {
             console.log('Article could not be loaded from Pinata gateway:', err);
@@ -135,8 +137,8 @@ function AllArticlesPage({ contract, account })
 
     /**
      * Handles the deletion click event of a specific article.
-     * Article CID is set to empty string and flagged as deleted (blockchain).
-     * @param {number} articleId The article ID of the article to delete.
+     * Article CID is set to empty string and flagged as deleted on blockchain.
+     * @param {Number} articleId The article ID of the article to delete.
      */
     const deleteArticle = async (articleId) =>
     {
@@ -167,49 +169,60 @@ function AllArticlesPage({ contract, account })
 
     /**
      * Handles the voting click event on a specific article.
-     * Also updates state to show incremented voting change.
-     * Alert handles already voted check.
-     * @param {number} articleId The article ID of the article to vote on.
-     * @param {bool} isLike A boolean flag to check if vote is like or dislike.
+     * Also updates state to show incremented/decremented voting change.
+     * Triggers blockchain voting update.
+     * @param {Number} articleId The article ID of the article to vote on.
+     * @param {Number} newVote Represents the new vote type.
+     * @param {Number} prevVote Represents the old vote type.
      */
-    const voteOnArticle = async (articleId, isLike) =>
+    const voteOnArticle = async (articleId, newVote, prevVote) =>
     {
         setStatus('voting');
         try 
         {
-            await contract.methods.voteOnArticle(articleId, isLike).send({ from: account });
+            await contract.methods.voteOnArticle(articleId, newVote).send({ from: account });
 
             setArticles((prevArticles) => 
             (
                 prevArticles.map((article) => 
-                (
-                    article.articleId === articleId ?
-                    {
-                        ...article,
-                        likes: isLike ? Number(article.likes) + 1 : article.likes,
-                        dislikes: !isLike ? Number(article.dislikes) + 1 : article.dislikes
-                    }
-                    : article
-                ))
+                {
+                    if (article.articleId !== articleId) return article;
+
+                    let likes = article.likes;
+                    let dislikes = article.dislikes;
+
+                    if (prevVote === 1) likes--;
+                    else if (prevVote === -1) dislikes--;
+
+                    if (newVote === 1) likes++;
+                    else if (newVote === -1) dislikes++;
+
+                    return { ...article, likes, dislikes };
+                })
             ));
 
             if (selectedArticleMeta?.articleId === articleId)
             {
                 setSelectedArticleMeta((prevMetaData) =>
-                (
-                    {
-                        ...prevMetaData,
-                        likes: isLike ? Number(prevMetaData.likes) + 1 : prevMetaData.likes,
-                        dislikes: !isLike ? Number(prevMetaData.dislikes) + 1 : prevMetaData.dislikes
-                    }
-                ));
+                {
+                    let likes = prevMetaData.likes;
+                    let dislikes = prevMetaData.dislikes;
+
+                    if (prevVote === 1) likes--;
+                    else if (prevVote === -1) dislikes--;
+
+                    if (newVote === 1) likes++;
+                    else if (newVote === -1) dislikes++;
+
+                    return { ...prevMetaData, likes, dislikes };
+                });
             }
-            setHasVoted(true);
+            setVoteType(newVote);
         }
         catch (err)
         {
             console.error('Voting failed:', err);
-            alert('You have already voted!');
+            alert('Voting failed!');
         }
         finally
         {
@@ -254,6 +267,7 @@ function AllArticlesPage({ contract, account })
                     <Col md={10} className='pe-5 pt-3 ps-5'>
                         <h1 className='text-center pb-2'>
                             {filteredArticles === 'all' ? 'All Articles' : 'My Articles'}
+                            <span className='text-muted'> ({articles.length})</span>
                         </h1>
                         {status === 'loading' && <IsLoading msg='Loading Articles...' />}
                         {status === 'deleting' && <IsLoading msg='Deleting Article...' />}
@@ -270,7 +284,7 @@ function AllArticlesPage({ contract, account })
                                         account={account}
                                         onDelete={deleteArticle}
                                         onVote={voteOnArticle}
-                                        hasVoted={hasVoted}
+                                        prevVote={Number(voteType)}
                                     /> :
                                     <ListArticles 
                                         articles={articles}
