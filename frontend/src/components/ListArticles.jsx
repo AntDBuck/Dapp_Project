@@ -12,7 +12,7 @@ import { formatTime, formatAddress } from "./UtilTools";
 function ListArticles({ articles, onArticleClick }) 
 {
     return (
-        <section className='article-card-section gap-1'>
+        <section className='article-card-section gap-3'>
             {
                 articles.length === 0 ? (<h3>No articles found.</h3>) : 
                 (
@@ -20,8 +20,9 @@ function ListArticles({ articles, onArticleClick })
                     (
                         <Button
                             key={article.articleId}
-                            onClick={() => onArticleClick(article.cid)}
                             variant='outline-dark'
+                            className='article-button'
+                            onClick={() => onArticleClick(article.cid)}
                         >
                             <h5 className='mt-2'><b>{article.title}</b></h5>
                             <div className='article-card-content gap-4'>

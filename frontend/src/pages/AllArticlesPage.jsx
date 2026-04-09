@@ -297,6 +297,7 @@ function AllArticlesPage({ contract, account })
                                 }
                             </>
                         }
+                        <br />
                     </Col>
                 </Row>
             </Container>
