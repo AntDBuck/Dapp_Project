@@ -42,13 +42,13 @@ git clone https://github.com/AntDBuck/Dapp_Project
 
 ### Backend
 1. Move into the backend directory.
-2. Open the .env-empty file and copy and paste your Pinata API key and Secret key into their respective field (ensure there are no spaces).
-3. Rename the .env-empty file to .env
-4. When in the backend directory, install the dependencies:
+2. Install the dependencies:
 ```
 npm install
 ```
-6. Start the backend server:
+3. Open the .env-empty file and copy and paste your Pinata API key and Secret key into their respective fields (ensure there are no spaces).
+4. Rename the .env-empty file to .env
+5. Start the backend server:
 ```
 npm start
 ```
@@ -63,20 +63,20 @@ npm install
 ```
 npm run dev
 ```
-6. Once the app is running, type o and press ENTER.
+4. Once the app is running, type o and press ENTER.
 
 ### Ganache and MetaMask
 1. Open Ganache and create a network using either quick start or new workspace.
 2. Log into your MetaMask account, go to settings, click 'Networks', and click 'Add a custom network'.
 3. Populate the custom network inputs:
    - 'Network name' can be anything.
-   - Set 'Default RPC URL' to 127.0.0.1:7545.
-   - Set 'Chain ID' to 1337.
-   - Set 'Currency symbol' to ETH.
-5. Go back to Ganache and copy a private key from one of the accounts.
-6. On MetaMask, click accounts, click 'Add wallet', and then click 'Import an account'.
-7. Paste the private key and press 'Import'.
-8. Connect to the Dapp when prompted.
+   - Set 'Default RPC URL' to 127.0.0.1:7545
+   - Set 'Chain ID' to 1337
+   - Set 'Currency symbol' to ETH
+4. Go back to Ganache and copy a private key from one of the accounts.
+5. On MetaMask, click accounts, click 'Add wallet', and then click 'Import an account'.
+6. Paste the private key and press 'Import'.
+7. Connect to the Dapp when prompted.
 
 ## End
 Please feel free to fork this repository and make your own changes/improvements.
