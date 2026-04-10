@@ -1,22 +1,16 @@
 # News Maker Dapp
 
 A hybrid distributed application for creating and sharing news!
+Note that this is a demo tool and would require enterprise level IPFS storage and a real blockchain network to work in a real-world setting.
 
-* Note that this is a demo tool and would require enterprise level IPFS storage and a real blockchain network to work in a real-world setting.
-
-
-=
-Key Features
-=
+## Key features
 - Utilises Web3 technologies and blockchain.
 -  Articles are created and owned by the creator.
 -  Transparent voting system. User's of the Dapp decided the trustworthiness, or lack thereof, of the articles.
 -  No central ownership. Once an article is commited to blockchain, it becomes immutable (it can be soft-deleted but the content is effectively unchanged).
 -  Futhering the point above, no censorship due to no central ownership.
 
-=
-How does the Dapp work?
-=
+## How does the Dapp work?
 The Dapp is composed of three main components:
 - Backend server handles safe storage and utilisation of Pinata API keys and passes JSON data (published articles) to Pinata's IPFS storage nodes via their gateway. The CID is returned.
 - A smart contract written in Solidity. Defines the operations for reading and writing article metadata on-chain.
@@ -28,12 +22,66 @@ The decentralised nature of the Dapp comes from two sources:
 
 The hybrid part of the Dapp is the requirement of the backend server for the publishing of articles. All over operations such as viewing and voting can be done without the server. The publishing of articles requires the use of the Pinata API keys. These should not be exposed on the frontend and are thus stored in the backend.
 
-=
-      Prerequisites
-=
+## Prerequisites
+- Recommend using Node 22+.
 - Pinata cloud account: https://pinata.cloud/
 - Pinata API keys (API Key and API Secret Key).
 - IMPORTANT! Ensure 'pinJSONToIPFS' permission is set during keys creation, other settings are optional. Keep these keys safe and do not expose them.
 - Install Ganache: https://archive.trufflesuite.com/ganache/
 - Install MetaMask: https://metamask.io/en-GB/download
+- Create a MetaMask account.
+
+## Setup tutorial
+Ensure all prerequisites are met before continuing.
+Clone the repository:
+```
+git clone https://github.com/AntDBuck/Dapp_Project
+```
+
+### Backend
+1. Move into the backend directory.
+2. Open the .env-empty file and copy and paste your Pinata API key and Secret key into their respective field (ensure there are no spaces).
+3. Rename the .env-empty file to .env
+4. When in the backend directory, install the dependencies:
+```
+npm install
+```
+6. Start the backend server:
+```
+npm start
+```
+
+### Frontend
+1. Move into the frontend directory.
+2. Install the dependencies:
+```
+npm install
+```
+3. Start the React app:
+```
+npm run dev
+```
+6. Once the app is running, type o and press ENTER.
+
+### Ganache and MetaMask
+1. Open Ganache and create a network using either quick start or new workspace.
+2. Log into your MetaMask account, go to settings, click 'Networks', and click 'Add a custom network'.
+3. Populate the custom network inputs:
+   - 'Network name' can be anything.
+   - Set 'Default RPC URL' to 127.0.0.1:7545.
+   - Set 'Chain ID' to 1337.
+   - Set 'Currency symbol' to ETH.
+5. Go back to Ganache and copy a private key from one of the accounts.
+6. On MetaMask, click accounts, click 'Add wallet', and then click 'Import an account'.
+7. Paste the private key and press 'Import'.
+8. Connect to the Dapp when prompted.
+
+## ---
+Thank you for reading!
+
+
+
+
+
+
 
