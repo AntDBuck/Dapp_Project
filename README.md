@@ -1,14 +1,15 @@
 # News Maker Dapp
 
 A hybrid distributed application for creating and sharing news!
+
 Note that this is a demo tool and would require enterprise level IPFS storage and a real blockchain network to work in a real-world setting.
 
 ## Key features
 - Utilises Web3 technologies and blockchain.
 -  Articles are created and owned by the creator.
 -  Transparent voting system. User's of the Dapp decided the trustworthiness, or lack thereof, of the articles.
--  No central ownership. Once an article is commited to blockchain, it becomes immutable (it can be soft-deleted but the content is effectively unchanged).
--  Futhering the point above, no censorship due to no central ownership.
+-  No central ownership. Once an article is committed to blockchain, it becomes immutable (it can be soft-deleted but the content is effectively unchanged).
+-  Furthering the point above, no censorship due to no central ownership.
 
 ## How does the Dapp work?
 The Dapp is composed of three main components:
@@ -33,6 +34,7 @@ The hybrid part of the Dapp is the requirement of the backend server for the pub
 
 ## Setup tutorial
 Ensure all prerequisites are met before continuing.
+
 Clone the repository:
 ```
 git clone https://github.com/AntDBuck/Dapp_Project
@@ -76,12 +78,7 @@ npm run dev
 7. Paste the private key and press 'Import'.
 8. Connect to the Dapp when prompted.
 
-## ---
+## End
+Please feel free to fork this repository and make your own changes/improvements.
+
 Thank you for reading!
-
-
-
-
-
-
-
