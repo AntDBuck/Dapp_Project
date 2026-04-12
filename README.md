@@ -24,7 +24,8 @@ The decentralised nature of the Dapp comes from two sources:
 The hybrid part of the Dapp is the requirement of the backend server for the publishing of articles. All over operations such as viewing and voting can be done without the server. The publishing of articles requires the use of the Pinata API keys. These should not be exposed on the frontend and are thus stored in the backend.
 
 ## Prerequisites
-- Recommend using Node 22+.
+- Recommend using Node version 22+.
+- Recommend using truffle version 5+.
 - Pinata cloud account: https://pinata.cloud/
 - Pinata API keys (API Key and API Secret Key).
 - IMPORTANT! Ensure 'pinJSONToIPFS' permission is set during keys creation, other settings are optional. Keep these keys safe and do not expose them.
@@ -59,11 +60,15 @@ npm start
 ```
 npm install
 ```
-3. Start the React app:
+3. Migrate contract to Ganache network:
+```
+truffle migrate --reset
+```
+4.  Start the React app:
 ```
 npm run dev
 ```
-4. Once the app is running, type o and press ENTER.
+5. Once the app is running, type o and press ENTER.
 
 ### Ganache and MetaMask
 1. Open Ganache and create a network using either quick start or new workspace.
